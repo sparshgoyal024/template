@@ -1,0 +1,79 @@
+resources:
+
+- name: {{ properties['name'] }}
+  type: compute.v1.instance
+  properties:
+    zone: us-central1-a
+    machineType: zones/us-central1-a/machineTypes/n1-standard-1
+    metadata:
+      items:
+        - key: startup-script
+          value: |
+            {{ properties['startup-script']|indent(12) }}
+    disks:
+    - deviceName: ca-lab-disk
+      type: PERSISTENT
+      boot: true
+      autoDelete: true
+      initializeParams:
+        sourceImage: projects/debian-cloud/global/images/debian-10-buster-v20210217
+        diskType: projects/ca-labs/zones/us-central1-c/diskTypes/pd-standard
+        diskSizeGb: 10
+    networkInterfaces:
+    - network: global/networks/default
+      accessConfigs:
+      - name: External NAT
+        type: ONE_TO_ONE_NAT
+    scheduling:
+      preemptible: true
+    serviceAccounts:
+      - email: {{ env['project_number'] }}-compute@developer.gserviceaccount.com
+        scopes: {{ properties['scopes'] }}
+- name: tcp-allow
+  type: compute.v1.firewall
+  properties:
+    network: https://www.googleapis.com/compute/v1/projects/{{ env['project_number'] }}/global/networks/default
+    sourceRanges: ["0.0.0.0/0"]
+    allowed:
+    - IPProtocol: TCP
+      ports: ["80","3000"]
+- name: trace-enable
+  type: deploymentmanager.v2.virtual.enableService
+  properties:
+    consumerId: "project:{{ env['project_number'] }}"
+    serviceName: cloudtrace.googleapis.com
+- name: profiler-enable
+  type: deploymentmanager.v2.virtual.enableService
+  properties:
+    consumerId: "project:{{ env['project_number'] }}"
+    serviceName: cloudprofiler.googleapis.com
+- name: debugger-enable
+  type: deploymentmanager.v2.virtual.enableService
+  properties:
+    consumerId: "project:{{ env['project_number'] }}"
+    serviceName: clouddebugger.googleapis.com
+- name: get-iam-policy
+  action: gcp-types/cloudresourcemanager-v1:cloudresourcemanager.projects.getIamPolicy
+  properties:
+    resource: {{project}}
+  metadata:
+    runtimePolicy:
+    - UPDATE_ALWAYS
+- name: patch-iam-policy
+  action: gcp-types/cloudresourcemanager-v1:cloudresourcemanager.projects.setIamPolicy
+  properties:
+    resource: {{project}}
+    policy:
+      etag: "$(ref.get-iam-policy.etag)"
+      auditConfigs:
+      - auditLogConfigs:
+        - logType: DATA_READ
+        - logType: ADMIN_READ
+        service: cloudkms.googleapis.com
+      - auditLogConfigs:
+        - logType: DATA_READ
+        service: clouddebugger.googleapis.com
+    updateMask: auditConfigs,etag
+  metadata:
+    dependsOn:
+    - get-iam-policy
