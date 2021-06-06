@@ -69,12 +69,9 @@ resources:
       etag: "$(ref.get-iam-policy.etag)"
       auditConfigs:
       - auditLogConfigs:
+        - logType: DATA_WRITE
         - logType: DATA_READ
-        - logType: ADMIN_READ
-        service: cloudkms.googleapis.com
-      - auditLogConfigs:
-        - logType: DATA_READ
-        service: clouddebugger.googleapis.com
+        service: cloudprofiler.googleapis.com
     updateMask: auditConfigs,etag
   metadata:
     dependsOn:
