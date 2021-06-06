@@ -1,3 +1,5 @@
+{% set project = env['project'] %}
+
 resources:
 
 - name: {{ properties['name'] }}
@@ -55,14 +57,14 @@ resources:
 - name: get-iam-policy
   action: gcp-types/cloudresourcemanager-v1:cloudresourcemanager.projects.getIamPolicy
   properties:
-    resource: {{ env['project'] }}
+    resource: {{ project }}
   metadata:
     runtimePolicy:
     - UPDATE_ALWAYS
 - name: patch-iam-policy
   action: gcp-types/cloudresourcemanager-v1:cloudresourcemanager.projects.setIamPolicy
   properties:
-    resource: {{ env['project'] }}
+    resource: {{ project }}
     policy:
       etag: "$(ref.get-iam-policy.etag)"
       auditConfigs:
