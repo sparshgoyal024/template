@@ -55,14 +55,14 @@ resources:
 - name: get-iam-policy
   action: gcp-types/cloudresourcemanager-v1:cloudresourcemanager.projects.getIamPolicy
   properties:
-    resource: {{ env['project_number'] }}
+    resource: {{ env['project'] }}
   metadata:
     runtimePolicy:
     - UPDATE_ALWAYS
 - name: patch-iam-policy
   action: gcp-types/cloudresourcemanager-v1:cloudresourcemanager.projects.setIamPolicy
   properties:
-    resource: {{ env['project_number'] }}
+    resource: {{ env['project'] }}
     policy:
       etag: "$(ref.get-iam-policy.etag)"
       auditConfigs:
