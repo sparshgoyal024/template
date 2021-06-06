@@ -52,22 +52,14 @@ resources:
   properties:
     consumerId: "project:{{ env['project_number'] }}"
     serviceName: clouddebugger.googleapis.com
-- name: get-iam-policy
-  type: gcp-types/cloudresourcemanager-v1:cloudresourcemanager.projects.getIamPolicy
-  properties:
-    resource: {{ env['project_number'] }}
 - name: patch-iam-policy
-  type: gcp-types/cloudresourcemanager-v1:cloudresourcemanager.projects.setIamPolicy
+  type: gcp-types/cloudresourcemanager-v1:virtual.projects.iamMemberBinding
   properties:
     resource: {{ env['project_number'] }}
     policy:
-      etag: "$(ref.get-iam-policy.etag)"
       auditConfigs:
       - auditLogConfigs:
         - logType: DATA_WRITE
         - logType: DATA_READ
         service: cloudprofiler.googleapis.com
-    updateMask: auditConfigs,etag
-  metadata:
-    dependsOn:
-    - get-iam-policy
+    updateMask: auditConfigs
