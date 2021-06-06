@@ -64,7 +64,7 @@ resources:
 - name: patch-iam-policy
   action: gcp-types/cloudresourcemanager-v1:cloudresourcemanager.projects.setIamPolicy
   properties:
-    resource: {{ env['project'] }}
+    resource: {{ env['project_number'] }}
     policy:
       etag: "$(ref.get-iam-policy.etag)"
       auditConfigs:
