@@ -57,7 +57,7 @@ resources:
 - name: get-iam-policy
   action: gcp-types/cloudresourcemanager-v1:cloudresourcemanager.projects.getIamPolicy
   properties:
-    resource: {{ project }}
+    resource: {{ env['project'] }}
   metadata:
     runtimePolicy:
     - UPDATE_ALWAYS
