@@ -56,9 +56,6 @@ resources:
   type: gcp-types/cloudresourcemanager-v1:cloudresourcemanager.projects.getIamPolicy
   properties:
     resource: {{ env['project_number'] }}
-  metadata:
-    runtimePolicy:
-    - UPDATE_ALWAYS
 - name: patch-iam-policy
   type: gcp-types/cloudresourcemanager-v1:cloudresourcemanager.projects.setIamPolicy
   properties:
