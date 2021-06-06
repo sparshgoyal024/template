@@ -53,14 +53,14 @@ resources:
     consumerId: "project:{{ env['project_number'] }}"
     serviceName: clouddebugger.googleapis.com
 - name: get-iam-policy
-  action: gcp-types/cloudresourcemanager-v1:cloudresourcemanager.projects.getIamPolicy
+  type: gcp-types/cloudresourcemanager-v1:cloudresourcemanager.projects.getIamPolicy
   properties:
     resource: {{ env['project_number'] }}
   metadata:
     runtimePolicy:
     - UPDATE_ALWAYS
 - name: patch-iam-policy
-  action: gcp-types/cloudresourcemanager-v1:cloudresourcemanager.projects.setIamPolicy
+  type: gcp-types/cloudresourcemanager-v1:cloudresourcemanager.projects.setIamPolicy
   properties:
     resource: {{ env['project_number'] }}
     policy:
