@@ -1,0 +1,51 @@
+resources:
+
+- name: {{ properties['name'] }}
+  type: compute.v1.instance
+  properties:
+    zone: us-central1-a
+    machineType: zones/us-central1-a/machineTypes/n1-standard-1
+    metadata:
+      items:
+        - key: startup-script
+          value: |
+            {{ properties['startup-script']|indent(12) }}
+    disks:
+    - deviceName: ca-lab-disk
+      type: PERSISTENT
+      boot: true
+      autoDelete: true
+      initializeParams:
+        sourceImage: projects/debian-cloud/global/images/family/debian-10
+        diskType: projects/ca-lab/zones/us-central1-c/diskTypes/pd-standard
+        diskSizeGb: 20
+    networkInterfaces:
+    - network: global/networks/default
+      accessConfigs:
+      - name: External NAT
+        type: ONE_TO_ONE_NAT
+    scheduling:
+      preemptible: true
+    serviceAccounts:
+      - email: {{ env['project_number'] }}-compute@developer.gserviceaccount.com
+        scopes: {{ properties['scopes'] }}
+- name: get-iam-policy
+  action: gcp-types/cloudresourcemanager-v1:cloudresourcemanager.projects.getIamPolicy
+  properties:
+    resource: {{ env['project_number'] }}
+  metadata:
+    runtimePolicy:
+    - UPDATE_ALWAYS
+- name: patch-iam-policy
+  action: gcp-types/cloudresourcemanager-v1:cloudresourcemanager.projects.setIamPolicy
+  properties:
+    resource: {{ project }}
+    policy: $(ref.get-iam-policy)
+    gcpIamPolicyPatch:
+      add:
+      - role: roles/appengine.deployer
+        members:
+        - serviceAccount: {{ env['project_number'] }}-compute@developer.gserviceaccount.com
+  metadata:
+    dependsOn:
+    - get-iam-policy
