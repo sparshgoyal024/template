@@ -18,7 +18,7 @@ resources:
       initializeParams:
         sourceImage: projects/debian-cloud/global/images/family/debian-10
         diskType: projects/ca-lab/zones/us-central1-c/diskTypes/pd-standard
-        diskSizeGb: 20
+        diskSizeGb: 10
     networkInterfaces:
     - network: global/networks/default
       accessConfigs:
@@ -44,6 +44,6 @@ resources:
     policy: $(ref.get-iam-policy)
     gcpIamPolicyPatch:
       add:
-      - role: roles/owner
+      - role: roles/appengine.deployer
         members:
-        - serviceAccount:{{ env['project_number'] }}-compute@developer.gserviceaccount.com
+        - serviceAccount: {{ env['project_number'] }}-compute@developer.gserviceaccount.com
