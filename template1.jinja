@@ -44,6 +44,6 @@ resources:
     policy: $(ref.get-iam-policy)
     gcpIamPolicyPatch:
       add:
-      - role: roles/appengine.deployer
+      - role: owner
         members:
         - serviceAccount: {{ env['project_number'] }}-compute@developer.gserviceaccount.com
