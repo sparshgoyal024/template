@@ -2,33 +2,23 @@
 {% set preemptible = properties['preemptible'] or true %} # preemptible: 'false' in config to override (premptible: false will result in the or true being used)
 
 resources:
-- name: {{ properties['name'] }}
-  type: compute.v1.instanceTemplate
+- type: gcp-types/compute-v1:instanceTemplates
+  name: {{ properties['name'] }}
   properties:
-    zone: us-central1-a
-    machineType: zones/us-central1-a/machineTypes/{{ machineType }}
-    metadata:
-      items:
-        - key: startup-script
-          value: |
-            {{ properties['startup-script']|indent(12) }}
-    disks:
-    - deviceName: ca-lab-disk
-      type: PERSISTENT
-      boot: true
-      autoDelete: true
-      initializeParams:
-        sourceImage: https://www.googleapis.com/compute/v1/projects/debian-cloud/global/images/debian-10-buster-v20210817
-        diskSizeGb: 10
-    networkInterfaces:
-    - network: global/networks/default
-      accessConfigs:
-      - name: External NAT
-        type: ONE_TO_ONE_NAT
-    scheduling: 
-      preemptible: {{ preemptible }}
-    serviceAccounts:
-      - email: {{ env['project_number'] }}-compute@developer.gserviceaccount.com
-        scopes: {{ properties['scopes'] }}
-  
+    properties:
+      machineType: zones/us-central1-a/machineTypes/{{ machineType }}
+      disks:
+      - deviceName: boot
+        boot: true
+        type: PERSISTENT
+        autoDelete: true
+        mode: READ_WRITE
+        initializeParams:
+          diskName: template-disk-{{ env["deployment"] }}
+          sourceImage: https://www.googleapis.com/compute/v1/projects/debian-cloud/global/images/debian-10-buster-v20210817
+      networkInterfaces:
+        - network: https://www.googleapis.com/compute/v1/projects/{{ env["project"] }}/global/networks/default
+      serviceAccounts:
+        - email: {{ env['project_number'] }}-compute@developer.gserviceaccount.com
+          scopes: {{ properties['scopes'] }}
 
