@@ -22,3 +22,17 @@ resources:
         - email: {{ env['project_number'] }}-compute@developer.gserviceaccount.com
           scopes: {{ properties['scopes'] }}
 
+- name: ca-ip
+  type: compute.v1.globalAddress
+  
+- name: ca-mig
+  type: compute.v1.regionInstanceGroupManager
+  properties:
+    instanceTemplate: $(ref.http-instance-template.selfLink)
+    targetSize: 2
+    region: us-central1 
+  
+  
+outputs:
+- name: publicIP
+  value: $(ref.ca-ip.address)
