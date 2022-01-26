@@ -28,7 +28,7 @@ resources:
 - name: ca-mig
   type: compute.v1.regionInstanceGroupManager
   properties:
-    instanceTemplate: $(ref.http-instance-template.selfLink)
+    instanceTemplate: $(ref.{{ properties['name'] }}.selfLink)
     targetSize: 2
     region: us-central1 
   
