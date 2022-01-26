@@ -6,7 +6,7 @@ resources:
   name: {{ properties['name'] }}
   properties:
     properties:
-      machineType: zones/us-central1-a/machineTypes/{{ machineType }}
+      machineType: {{ machineType }}
       disks:
       - deviceName: boot
         boot: true
