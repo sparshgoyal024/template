@@ -31,7 +31,16 @@ resources:
     instanceTemplate: $(ref.{{ properties['name'] }}.selfLink)
     targetSize: 2
     region: us-central1 
-  
+    
+- name: ca-health-check
+  type: compute.v1.httpHealthCheck
+  properties:
+    requestPath: /robots.txt
+    port: 80
+    checkIntervalSec: 5
+    timeoutSec: 5
+    unhealthyThreshold: 2
+    healthyThreshold: 2
   
 outputs:
 - name: publicIP
