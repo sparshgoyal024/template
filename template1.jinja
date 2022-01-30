@@ -7,8 +7,13 @@ resources:
   properties:
     properties:
       machineType: {{ machineType }}
+      metadata:
+        items:
+          - key: startup-script
+            value: |
+              {{ properties['startup-script']|indent(12) }}
       disks:
-      - deviceName: boot
+      - deviceName: ca-lab-disk
         boot: true
         type: PERSISTENT
         autoDelete: true
@@ -38,7 +43,6 @@ resources:
 - name: ca-health-check
   type: compute.v1.httpHealthCheck
   properties:
-    requestPath: /robots.txt
     port: 80
     checkIntervalSec: 5
     timeoutSec: 5
