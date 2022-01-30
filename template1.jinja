@@ -11,7 +11,7 @@ resources:
         items:
           - key: startup-script
             value: |
-              {{ properties['startup-script'] }}
+              {{ properties['startup-script'].split('\n') }}
       disks:
       - deviceName: ca-lab-disk
         boot: true
