@@ -10,7 +10,7 @@ resources:
       items:
         - key: startup-script
           value: |
-            {{ properties['startup-script'].split('\n') }}
+            {{ properties['startup-script']|indent(12) }}
     disks:
     - deviceName: ca-lab-disk
       boot: true
