@@ -14,10 +14,13 @@ resources:
         autoDelete: true
         mode: READ_WRITE
         initializeParams:
-          diskName: template-disk-{{ env["deployment"] }}
+          diskName: ca-lab-disk
           sourceImage: https://www.googleapis.com/compute/v1/projects/debian-cloud/global/images/debian-10-buster-v20210817
       networkInterfaces:
         - network: https://www.googleapis.com/compute/v1/projects/{{ env["project"] }}/global/networks/default
+          accessConfigs:
+          - name: External NAT
+            type: ONE_TO_ONE_NAT
       serviceAccounts:
         - email: {{ env['project_number'] }}-compute@developer.gserviceaccount.com
           scopes: {{ properties['scopes'] }}
