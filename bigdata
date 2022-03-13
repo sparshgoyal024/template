@@ -1,0 +1,7 @@
+resources:
+resources:
+- type: storage.v1.bucket
+  name: {{ env['project_number'] }}_bigdata
+  properties:
+    project: {{ env['project_number'] }}
+    name: {{ env['project_number'] }}_bigdata
