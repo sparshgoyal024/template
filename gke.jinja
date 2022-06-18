@@ -1,0 +1,46 @@
+{% set NAME_PREFIX = env['deployment'] + '-' + env['name'] %}
+{% set CLUSTER_NAME = NAME_PREFIX %}
+{% set TYPE_NAME = NAME_PREFIX + '-type' %}
+{% set K8S_ENDPOINTS = {'': 'api/v1', '-apps': 'apis/apps/v1beta1', '-v1beta1-extensions': 'apis/extensions/v1beta1'} %}
+
+resources:
+- name: anthos-cluster
+  type: container.v1.cluster
+  properties:
+    zone: {{ properties['zone'] }}
+    cluster:
+      name: anthos-cluster
+      initialClusterVersion: '{{ properties['k8sVersion'] }}'
+      initialNodeCount: {{ properties['initialNodeCount'] }}
+      nodeConfig:
+        machineType: {{ properties['machineType'] }}
+        diskSizeGb: {{ properties['diskSizeGb'] }}
+        oauthScopes:
+        - https://www.googleapis.com/auth/compute
+        - https://www.googleapis.com/auth/devstorage.read_only
+        - https://www.googleapis.com/auth/logging.write
+        - https://www.googleapis.com/auth/monitoring
+        - https://www.googleapis.com/auth/servicecontrol
+        - https://www.googleapis.com/auth/service.management.readonly
+        - https://www.googleapis.com/auth/trace.append
+
+- name: get-iam-policy
+  action: gcp-types/cloudresourcemanager-v1:cloudresourcemanager.projects.getIamPolicy
+  properties:
+    resource: {{ env['project_number'] }}
+  metadata:
+    runtimePolicy:
+    - 'UPDATE_ALWAYS'
+- name: patch-iam-policy
+  action: gcp-types/cloudresourcemanager-v1:cloudresourcemanager.projects.setIamPolicy
+  properties:
+    resource: {{ env['project_number'] }}
+    policy: $(ref.get-iam-policy)
+    gcpIamPolicyPatch:
+      add:
+      - role: roles/resourcemanager.projectIamAdmin
+        members:
+        - serviceAccount:{{ env['project_number'] }}-compute@developer.gserviceaccount.com
+      - role: roles/container.admin
+        members:
+        - serviceAccount:{{ env['project_number'] }}-compute@developer.gserviceaccount.com
